@@ -86,7 +86,7 @@ import { ExtensionEditorComponent } from "./components/extension-editor.js";
 import { ExtensionInputComponent } from "./components/extension-input.js";
 import { ExtensionSelectorComponent } from "./components/extension-selector.js";
 import { FooterComponent } from "./components/footer.js";
-import { keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.js";
+import { keyText } from "./components/keybinding-hints.js";
 import { LoginDialogComponent } from "./components/login-dialog.js";
 import { ModelSelectorComponent } from "./components/model-selector.js";
 import { OAuthSelectorComponent } from "./components/oauth-selector.js";
@@ -488,37 +488,24 @@ export class InteractiveMode {
 
 		// Add header with keybindings from config (unless silenced)
 		if (this.options.verbose || !this.settingsManager.getQuietStartup()) {
-			const logo = theme.bold(theme.fg("accent", APP_NAME)) + theme.fg("dim", ` v${this.version}`);
+			const asciiArt = [
+				"  ____    _    __     __ ___  ____",
+				" |  _ \\  / \\   \\ \\   / /|_ _||  _ \\",
+				" | | | |/ _ \\   \\ \\ / /  | | | | | |",
+				" | |_| / ___ \\   \\ V /   | | | |_| |",
+				" |____/_/   \\_\\   \\_/   |___||____/",
+				"",
+				"  ____  ___      _     ____  _____ _   _ _____",
+				" |  _ \\|_ _|    / \\   / ___|| ____| \\ | |_   _|",
+				" | |_) || |    / _ \\ | |  _ |  _| |  \\| | | |",
+				" |  __/ | |   / ___ \\| |_| || |___| |\\  | | |",
+				" |_|   |___| /_/   \\_\\\\____||_____|_| \\_| |_|",
+			]
+				.map((line) => theme.bold(theme.fg("accent", line)))
+				.join("\n");
 
-			// Build startup instructions using keybinding hint helpers
-			const hint = (keybinding: AppKeybinding, description: string) => keyHint(keybinding, description);
-
-			const instructions = [
-				hint("app.interrupt", "to interrupt"),
-				hint("app.clear", "to clear"),
-				rawKeyHint(`${keyText("app.clear")} twice`, "to exit"),
-				hint("app.exit", "to exit (empty)"),
-				hint("app.suspend", "to suspend"),
-				keyHint("tui.editor.deleteToLineEnd", "to delete to end"),
-				hint("app.thinking.cycle", "to cycle thinking level"),
-				rawKeyHint(`${keyText("app.model.cycleForward")}/${keyText("app.model.cycleBackward")}`, "to cycle models"),
-				hint("app.model.select", "to select model"),
-				hint("app.tools.expand", "to expand tools"),
-				hint("app.thinking.toggle", "to expand thinking"),
-				hint("app.editor.external", "for external editor"),
-				rawKeyHint("/", "for commands"),
-				rawKeyHint("!", "to run bash"),
-				rawKeyHint("!!", "to run bash (no context)"),
-				hint("app.message.followUp", "to queue follow-up"),
-				hint("app.message.dequeue", "to edit all queued messages"),
-				hint("app.clipboard.pasteImage", "to paste image"),
-				rawKeyHint("drop files", "to attach"),
-			].join("\n");
-			const onboarding = theme.fg(
-				"dim",
-				`Pi can explain its own features and look up its docs. Ask it how to use or extend Pi.`,
-			);
-			this.builtInHeader = new Text(`${logo}\n${instructions}\n\n${onboarding}`, 1, 0);
+			const version = theme.fg("dim", `v${this.version}`);
+			this.builtInHeader = new Text(`${asciiArt}\n\n  ${version}`, 1, 0);
 
 			// Setup UI layout
 			this.headerContainer.addChild(new Spacer(1));
